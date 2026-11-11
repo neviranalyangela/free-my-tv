@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -63,7 +64,10 @@ public class SleepOverlay extends Service {
                 .putExtra("language", Prefs.language());
         boolean wanted = Prefs.sleepShown() && SleepTimer.minutesLeft(c) > 0;
         if (wanted && Settings.canDrawOverlays(c)) {
-            c.startForegroundService(i);
+            // startForegroundService is Android 8+: below that startService, the service still calls
+            // startForeground itself in onCreate.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) c.startForegroundService(i);
+            else c.startService(i);
         } else {
             c.stopService(i);
             if (wanted && Capabilities.overlay(c)) allow(c.getApplicationContext());
@@ -114,9 +118,17 @@ public class SleepOverlay extends Service {
     @Override public void onCreate() {
         super.onCreate();
         // In the foreground first: a quick stop right after the start must not find it still in the background.
-        NotificationManager nm = getSystemService(NotificationManager.class);
-        nm.createNotificationChannel(new NotificationChannel("sleep", Ui.tr("Sleep Timer"), NotificationManager.IMPORTANCE_MIN));
-        startForeground(1, new Notification.Builder(this, "sleep").setSmallIcon(R.drawable.icon)
+        // NotificationChannel and the two-arg Builder are Android 8+: below that there are no channels,
+        // and the one-arg Builder posts the same notification.
+        Notification.Builder builder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManager nm = getSystemService(NotificationManager.class);
+            nm.createNotificationChannel(new NotificationChannel("sleep", Ui.tr("Sleep Timer"), NotificationManager.IMPORTANCE_MIN));
+            builder = new Notification.Builder(this, "sleep");
+        } else {
+            builder = new Notification.Builder(this);
+        }
+        startForeground(1, builder.setSmallIcon(R.drawable.icon)
                 .setContentTitle(Ui.tr("Sleep Timer")).build());
         Ui.init(this);   // its own process: the app's font isn't loaded here yet
         SleepTimer.listen(this);
