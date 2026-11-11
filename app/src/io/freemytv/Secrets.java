@@ -11,11 +11,13 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.ParcelFileDescriptor;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 
@@ -39,9 +41,19 @@ public class Secrets extends ContentProvider {
     /** The key sent for `name`, or "" (none yet). A small file read: callers keep it rather than ask every frame. */
     static String get(Context c, String name) {
         try {
-            return new String(Files.readAllBytes(file(c, name).toPath()), StandardCharsets.UTF_8).trim();
+            return new String(readAll(file(c, name)), StandardCharsets.UTF_8).trim();
         } catch (IOException e) {
             return "";
+        }
+    }
+
+    /** Files.readAllBytes is Android 8+; plain java.io reads the same bytes on Android 7. */
+    private static byte[] readAll(File f) throws IOException {
+        try (InputStream in = new FileInputStream(f); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            byte[] buf = new byte[4096];
+            int n;
+            while ((n = in.read(buf)) != -1) out.write(buf, 0, n);
+            return out.toByteArray();
         }
     }
 
@@ -61,7 +73,7 @@ public class Secrets extends ContentProvider {
     private static boolean whole(File f) {
         if (f.length() == 0 || f.length() > 4096) return false;
         try {
-            String v = new String(Files.readAllBytes(f.toPath()), StandardCharsets.UTF_8).trim();
+            String v = new String(readAll(f), StandardCharsets.UTF_8).trim();
             return v.matches("[\\x21-\\x7E]{8,4000}");
         } catch (IOException e) {
             return false;
