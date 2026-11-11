@@ -1215,7 +1215,8 @@ final class HomeApps {
         } catch (PackageManager.NameNotFoundException ignored) {
         }
         if (icon == null) return darkTile(TILE_W, TILE_H);
-        boolean adaptive = icon instanceof AdaptiveIconDrawable;
+        // AdaptiveIconDrawable is Android 8+: below that every icon is a legacy one.
+        boolean adaptive = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && icon instanceof AdaptiveIconDrawable;
         // Drawn at the icon's own resolution (the whole tile, so the squircle's edge is smooth too), then filtered down.
         float drawn = TILE_H * (adaptive ? 0.56f * 1.5f : 0.46f);
         float k = detail(icon, drawn, drawn);
