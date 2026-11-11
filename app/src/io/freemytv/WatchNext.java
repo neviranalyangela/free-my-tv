@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.media.tv.TvContract;
 import android.net.Uri;
+import android.os.Build;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -75,6 +76,8 @@ final class WatchNext {
 
     /** Everything to show, newest first (off the main thread: these are content provider queries). */
     static List<Item> load(Context c) {
+        // TvContract.WatchNextPrograms is Android 8+: below that there is no Watch Next list, so no row.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return Collections.emptyList();
         if (!allowed(c)) return Collections.emptyList();
         ContentResolver cr = c.getContentResolver();
         List<Item> all = new ArrayList<>(read(cr, TvContract.WatchNextPrograms.CONTENT_URI));
@@ -121,7 +124,10 @@ final class WatchNext {
         }
         if (allowed(c)) {
             ContentResolver cr = c.getContentResolver();
-            packages(cr, TvContract.WatchNextPrograms.CONTENT_URI, TvContract.WatchNextPrograms.COLUMN_PACKAGE_NAME, null, pkgs);
+            // WatchNextPrograms is Android 8+; Channels (below) is Android 5, so it stays.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                packages(cr, TvContract.WatchNextPrograms.CONTENT_URI, TvContract.WatchNextPrograms.COLUMN_PACKAGE_NAME, null, pkgs);
+            }
             // Home screen rows (not the tuner's channels): apps write these, and Watch Next, without any permission.
             packages(cr, TvContract.Channels.CONTENT_URI, TvContract.Channels.COLUMN_PACKAGE_NAME, TvContract.Channels.COLUMN_TYPE, pkgs);
         }
