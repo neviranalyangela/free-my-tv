@@ -88,8 +88,9 @@ final class Ui {
     private static Typeface font(AssetManager a, int opticalSize, int weight) {
         if (has(a, FONT)) {
             try {
-                Typeface t = new Typeface.Builder(a, FONT)
-                        .setFontVariationSettings("'opsz' " + opticalSize + ", 'wght' " + weight).build();
+                // Typeface.Builder is Android 8+: below that the file loads at its default instance (API 1).
+                Typeface t = Build.VERSION.SDK_INT >= 26 ? FontVar.create(a, opticalSize, weight)
+                        : Typeface.createFromAsset(a, FONT);
                 if (t != null) return t;
             } catch (RuntimeException ignored) {
             }
@@ -97,6 +98,18 @@ final class Ui {
         // Typeface.create(family, weight, italic) is Android 9+; Android 8 only has regular and bold.
         if (Build.VERSION.SDK_INT >= 28) return Weighted.create(weight);
         return Typeface.create(Typeface.DEFAULT, weight >= 600 ? Typeface.BOLD : Typeface.NORMAL);
+    }
+
+    /** Only this class touches the Android 8 call, so Ui itself still verifies on Android 7 (like Weighted). */
+    private static final class FontVar {
+        static Typeface create(AssetManager a, int opticalSize, int weight) {
+            try {
+                return new Typeface.Builder(a, FONT)
+                        .setFontVariationSettings("'opsz' " + opticalSize + ", 'wght' " + weight).build();
+            } catch (RuntimeException ignored) {
+                return null;
+            }
+        }
     }
 
     /** Only this class touches the Android 9 call, so Ui itself still verifies on Android 8 (like Recording.Node). */
