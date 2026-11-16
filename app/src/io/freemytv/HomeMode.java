@@ -141,6 +141,35 @@ final class HomeMode {
         "com.sony.dtv.usercontext",                                                   // viewing context for recommendations
         "com.sony.dtv.promos", "com.sony.dtv.sonyselect",                             // promo apps
         "com.sony.dtv.demosupport", "com.sony.dtv.demosystemsupport", "com.sony.dtv.multiscreendemo",   // store demo
+        // Glofiish iX 40 Smart (RealtekATV, Android 7.1.1 / API 25) — verified live 2026-11-16, all 28 already
+        // disabled-user via adb and the TV still works (Home, Lampa, YouTube TV, ATV Launcher Pro all fine).
+        // Already-off packages are recorded as keptOff, so Original never turns them back on; a TV update that
+        // re-enables one is turned off again by verifyNow. NOT here on purpose: com.hikeen.transfer (the current
+        // Home, priority 99 — added at switch time as the stock home instead) and the system-uid held ones
+        // (com.rtk.mediabrowser, com.hikeen.scrollhelper, com.zeasn.deviceportal.asdprovider.hikeen).
+        "com.accuweather.android",                                                  // weather widget
+        "com.adups.fota", "com.adups.fota.sysoper",                                 // FOTA updater
+        "com.android.cts.ctsshim", "com.android.cts.priv.ctsshim",                  // CTS test shims
+        "com.android.dreams.phototable",                                            // screensaver (also added at switch time)
+        "com.android.gallery3d",                                                    // stock gallery
+        "com.android.wallpaper.livepicker", "com.android.wallpaperbackup",          // live wallpapers, backup
+        "com.google.android.apps.turbo",                                            // Device Health / Turbo
+        "com.google.android.backuptransport",                                       // Google backup transport
+        "com.google.android.feedback",                                              // feedback
+        "com.google.android.instantapps.supervisor",                                // Instant Apps
+        "com.google.android.leanbacklauncher.partnercustomizer",                    // maker Leanback customisation
+        "com.google.android.leanbacklauncher.partnerwidget",
+        "com.google.android.printservice.recommendation",                           // print service
+        "com.google.android.syncadapters.calendar", "com.google.android.syncadapters.contacts",
+        "com.google.android.tv.bugreportsender",                                    // bug reports
+        "com.google.android.tvsetup.partnercustomizer",                             // setup customisation
+        "com.hikeen.guide",                                                         // maker guide
+        "com.likhtar.home",                                                         // unused third-party launcher
+        "com.realtek.media.player",                                                 // stock Realtek player
+        "com.rtk.android.miracast",                                                 // Miracast receiver (not used)
+        "com.android.chrome",                                                       // Chrome 65 (TV Bro is the browser)
+        "com.svox.pico",                                                            // Pico TTS (Google TTS is the main one)
+        "org.xwalk.core", "yo.app",                                                 // Crosswalk runtime + Yo app (already off)
         // HY300 projectors (Amlogic txhd2, Android 13): JmLauncher opens it from the Home button (JM_HOME); off only
         // once JM_HOME is ours
         HTC_HOME,                                                                     // the stock home (and an ad SDK)
