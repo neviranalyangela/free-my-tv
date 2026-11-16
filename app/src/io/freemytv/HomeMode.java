@@ -141,8 +141,8 @@ final class HomeMode {
         "com.sony.dtv.usercontext",                                                   // viewing context for recommendations
         "com.sony.dtv.promos", "com.sony.dtv.sonyselect",                             // promo apps
         "com.sony.dtv.demosupport", "com.sony.dtv.demosystemsupport", "com.sony.dtv.multiscreendemo",   // store demo
-        // Glofiish iX 40 Smart (RealtekATV, Android 7.1.1 / API 25) — verified live 2026-11-16, all 28 already
-        // disabled-user via adb and the TV still works (Home, Lampa, YouTube TV, ATV Launcher Pro all fine).
+        // Glofiish iX 40 Smart (RealtekATV, Android 7.1.1 / API 25) — verified live 2026-11-16, all 29 already
+        // disabled-user via adb and the TV still works (Home, Lampa, SmartTube, ATV Launcher Pro all fine).
         // Already-off packages are recorded as keptOff, so Original never turns them back on; a TV update that
         // re-enables one is turned off again by verifyNow. NOT here on purpose: com.hikeen.transfer (the current
         // Home, priority 99 — added at switch time as the stock home instead) and the system-uid held ones
@@ -162,6 +162,7 @@ final class HomeMode {
         "com.google.android.printservice.recommendation",                           // print service
         "com.google.android.syncadapters.calendar", "com.google.android.syncadapters.contacts",
         "com.google.android.tv.bugreportsender",                                    // bug reports
+        "com.google.android.youtube.tv",                                            // YouTube TV (SmartTube is used instead)
         "com.google.android.tvsetup.partnercustomizer",                             // setup customisation
         "com.hikeen.guide",                                                         // maker guide
         "com.likhtar.home",                                                         // unused third-party launcher
